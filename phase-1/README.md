@@ -1,4 +1,3 @@
-```
 # 📋 Phase-I: Enhanced Command-Line Todo Application
 
 A beautiful, feature-rich command-line todo application written in Python with an enhanced user interface. Manage your tasks efficiently from the terminal with visual feedback, emojis, and intuitive controls.
@@ -188,4 +187,3 @@ This project is licensed under the MIT License.
 - Developed using Claude Code and Spec-Driven Development
 - Part of the **Hackathon-II-Evolution-of-Todo**
 - Made with ❤️ and ☕ by **Awais Mehmood**
-```
