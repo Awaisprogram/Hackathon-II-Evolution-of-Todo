@@ -5,10 +5,10 @@ import { Sparkles, Github, Twitter, Linkedin, Mail } from 'lucide-react';
 const Footer = () => {
   return (
     <footer className="relative bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 border-t border-blue-500/20">
-      {/* Background gradient accents */}
+      {/* Optimized background gradient accents */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-light animated-bg-light"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-light animated-bg-light"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
