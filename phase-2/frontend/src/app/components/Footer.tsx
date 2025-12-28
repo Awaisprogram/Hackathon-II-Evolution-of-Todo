@@ -20,7 +20,7 @@ const Footer = () => {
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <h3 className="text-xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-                TodoApp
+              ToDoze
               </h3>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">

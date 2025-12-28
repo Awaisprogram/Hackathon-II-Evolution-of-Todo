@@ -28,7 +28,7 @@ const Navbar = () => {
                   <span className="text-white font-bold text-sm">T</span>
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                  TodoApp
+                ToDoze
                 </span>
               </a>
             </div>
@@ -89,7 +89,7 @@ const Navbar = () => {
               onClick={toggleMenu}
               className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-blue-500/10 transition-colors"
             >
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 cursor-pointer" />
             </button>
           </div>
 

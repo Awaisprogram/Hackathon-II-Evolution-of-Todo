@@ -23,7 +23,8 @@ export default function Hero() {
         {/* Hero Section */}
         <div className="text-center">
           <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-blue-200 to-cyan-200 bg-clip-text text-transparent mb-6 leading-tight">
-            Simplify Your Life with TodoApp
+            Simplify Your Life <br/>
+            with TodoApp
           </h1>
           <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
             A modern, intuitive task management application that helps you organize your daily tasks,
