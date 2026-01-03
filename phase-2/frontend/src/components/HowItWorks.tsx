@@ -135,10 +135,10 @@ function HowItWorks() {
                 </motion.div>
 
                 {/* Content */}
-                <h3 className="text-xl font-semibold text-white mb-4">
+                <h3 className="text-xl font-semibold text-center text-white mb-4">
                   {step.title}
                 </h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-gray-400 text-sm text-center leading-relaxed">
                   {step.description}
                 </p>
               </div>
