@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
 import type { Variants } from "framer-motion";
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Home, LayoutDashboard, LogIn, UserPlus } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Home, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
+import Link from "next/link";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,27 +16,25 @@ const Navbar = () => {
   // Disable body scroll when sidebar is open and reset scroll position
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      const sidebar = document.getElementById('mobile-sidebar');
+      document.body.style.overflow = "hidden";
+      const sidebar = document.getElementById("mobile-sidebar");
       if (sidebar) {
         sidebar.scrollTop = 0;
       }
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
   const navItems = [
-    { name: 'Home', href: '/', icon: Home },
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Login', href: '/login', icon: LogIn },
-    { name: 'Register', href: '/register', icon: UserPlus },
+    { name: "Home", href: "/", icon: Home },
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Testonimials", href: "#", icon: Home },
   ];
-
 
   const sidebarVariants: Variants = {
     hidden: {
@@ -61,7 +60,7 @@ const Navbar = () => {
       },
     },
   };
-  
+
   const navItemVariants = {
     hidden: { opacity: 0, x: -20 },
     visible: (i: number) => ({
@@ -69,9 +68,9 @@ const Navbar = () => {
       x: 0,
       transition: {
         delay: 0.1 + i * 0.05,
-        duration: 0.3
-      }
-    })
+        duration: 0.3,
+      },
+    }),
   };
 
   return (
@@ -79,8 +78,8 @@ const Navbar = () => {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-        className="bg-slate-950/80 backdrop-blur-md border-b border-blue-500/20 shadow-lg shadow-blue-500/5 sticky top-0 z-40 scroll-optimized"
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        className="bg-slate-950/80 backdrop-blur-md  border-b border-blue-500/20 shadow-lg shadow-blue-500/5 sticky top-0 z-40 scroll-optimized"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
@@ -93,7 +92,7 @@ const Navbar = () => {
               >
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: 'spring', stiffness: 400 }}
+                  transition={{ type: "spring", stiffness: 400 }}
                   className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-2"
                 >
                   <span className="text-white font-bold text-sm">T</span>
@@ -105,21 +104,38 @@ const Navbar = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex md:items-center md:space-x-1">
-              {navItems.map((item, index) => (
-                <motion.a
-                  key={item.name}
-                  href={item.href}
-                  custom={index}
-                  initial="hidden"
-                  animate="visible"
-                  variants={navItemVariants}
-                  whileHover={{ scale: 1.05, color: '#ffffff' }}
-                  className="px-4 py-2 text-gray-300 hover:bg-blue-500/10 rounded-lg transition-all duration-200 font-medium"
+            <nav className="hidden gap-8 text-sm font-medium text-slate-400 flex justify-center items-center md:flex">
+              {navItems.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="hover:text-blue-400 transition-colors relative group"
                 >
-                  {item.name}
-                </motion.a>
+                  {link.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full" />
+                </Link>
               ))}
+            </nav>
+
+            {/* Desktop CTA Buttons */}
+            <div className="hidden md:flex items-center gap-2">
+              <Link
+                href="/login"
+                className="hidden sm:block text-sm font-medium text-slate-300 hover:text-violet-400 transition-colors"
+              >
+                Log in
+              </Link>
+              <motion.a
+                href="/register"
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 0 25px rgba(59, 130, 246, 0.4)",
+                }}
+                whileTap={{ scale: 0.98 }}
+                className="hidden sm:block rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-violet-500 hover:scale-105 shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+              >
+                Register
+              </motion.a>
             </div>
 
             {/* Mobile menu button */}
@@ -131,7 +147,11 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
               </motion.button>
             </div>
           </div>
@@ -157,7 +177,7 @@ const Navbar = () => {
         id="mobile-sidebar"
         variants={sidebarVariants}
         initial="hidden"
-        animate={isOpen ? 'visible' : 'hidden'}
+        animate={isOpen ? "visible" : "hidden"}
         exit="exit"
         className="fixed top-0 left-0 h-full w-72 bg-slate-950 border-r border-blue-500/20 overflow-hidden z-50"
       >
@@ -201,13 +221,16 @@ const Navbar = () => {
                   initial="hidden"
                   animate="visible"
                   variants={navItemVariants}
-                  whileHover={{ x: 5, backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
+                  whileHover={{
+                    x: 5,
+                    backgroundColor: "rgba(59, 130, 246, 0.1)",
+                  }}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all duration-200 group"
                   onClick={toggleMenu}
                 >
                   <motion.div
                     whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ type: 'spring', stiffness: 400 }}
+                    transition={{ type: "spring", stiffness: 400 }}
                   >
                     <Icon className="h-5 w-5 text-blue-400 group-hover:text-cyan-400 transition-colors" />
                   </motion.div>
@@ -215,6 +238,20 @@ const Navbar = () => {
                 </motion.a>
               );
             })}
+            <div className="mt-4  flex flex-col gap-3 border-t border-violet-500/10 pt-4">
+              <Link
+                href="/login"
+                className="flex h-11 items-center justify-center rounded-lg border border-violet-500/20 text-sm font-medium text-white"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/register"
+                className="flex h-11 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-sm font-bold text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+              >
+                Register For Free
+              </Link>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -223,4 +260,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

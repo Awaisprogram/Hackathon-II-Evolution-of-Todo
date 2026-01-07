@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 export default function Hero() {
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
   };
 
   const staggerContainer = {
@@ -15,9 +15,9 @@ export default function Hero() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2
-      }
-    }
+        staggerChildren: 0.2,
+      },
+    },
   };
 
   return (
@@ -27,13 +27,13 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
           className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-optimized animated-bg"
         />
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5, delay: 0.3, ease: 'easeOut' }}
+          transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
           className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-optimized animated-bg delay-700"
         />
         <motion.div
@@ -70,14 +70,17 @@ export default function Hero() {
             className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-blue-200 to-cyan-200 bg-clip-text text-transparent mb-6 leading-tight"
           >
             Simplify Your Life <br />
-            with TodoApp
+            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              with TodoApp
+            </span>
           </motion.h1>
           <motion.p
             variants={fadeInUp}
             className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed"
           >
-            A modern, intuitive task management application that helps you organize your daily tasks,
-            boost productivity, and achieve your goals with ease.
+            A modern, intuitive task management application that helps you
+            organize your daily tasks, boost productivity, and achieve your
+            goals with ease.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -87,7 +90,10 @@ export default function Hero() {
           >
             <motion.button
               variants={fadeInUp}
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(59, 130, 246, 0.4)' }}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 0 30px rgba(59, 130, 246, 0.4)",
+              }}
               whileTap={{ scale: 0.98 }}
               className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
             >
@@ -95,14 +101,17 @@ export default function Hero() {
               <motion.span
                 initial={{ x: 0 }}
                 whileHover={{ x: 5 }}
-                transition={{ type: 'spring', stiffness: 300 }}
+                transition={{ type: "spring", stiffness: 300 }}
               >
                 <ArrowRight className="w-5 h-5" />
               </motion.span>
             </motion.button>
             <motion.button
               variants={fadeInUp}
-              whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+              whileHover={{
+                scale: 1.05,
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+              }}
               whileTap={{ scale: 0.98 }}
               className="px-8 py-4 bg-white/5 text-white font-semibold rounded-xl border border-white/10 backdrop-blur-sm transition-all duration-300 cursor-pointer"
             >
