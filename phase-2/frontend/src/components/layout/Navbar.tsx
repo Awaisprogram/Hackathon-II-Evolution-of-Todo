@@ -3,16 +3,34 @@
 import type { Variants } from "framer-motion";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Home, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
+import { Menu, X, Home, LayoutDashboard, LogIn, UserPlus , LogOut, ChevronRight} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession, signOut } from "next-auth/react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 
 
 const Navbar = () => {
+  const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const getInitials = (name?: string | null, email?: string | null) => {
+    if (name) return name.charAt(0).toUpperCase();
+    if (email) return email.charAt(0).toUpperCase();
+    return "U";
   };
 
   // Disable body scroll when sidebar is open and reset scroll position
@@ -119,23 +137,72 @@ const Navbar = () => {
 
             {/* Desktop CTA Buttons */}
             <div className="hidden md:flex items-center gap-2">
-              <Link
-                href="/login"
-                className="hidden sm:block text-sm font-medium text-slate-300 hover:text-violet-400 transition-colors"
-              >
-                Log in
-              </Link>
-              <motion.a
-                href="/register"
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 0 25px rgba(59, 130, 246, 0.4)",
-                }}
-                whileTap={{ scale: 0.98 }}
-                className="hidden sm:block rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-violet-500 hover:scale-105 shadow-[0_0_15px_rgba(139,92,246,0.3)]"
-              >
-                Register
-              </motion.a>
+              {status === "loading" ? (
+                <div className="h-9 w-9 animate-pulse rounded-full bg-blue-900/20 border border-blue-500/20" />
+              ) : session?.user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="h-9 w-9 cursor-pointer border border-blue-500/20 hover:border-blue-500/50 transition-colors">
+                      <AvatarImage
+                        src={session.user.image || undefined}
+                        alt={session.user.name || "User"}
+                      />
+                      <AvatarFallback className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white">
+                        {getInitials(session.user.name, session.user.email)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-56 bg-slate-950 border-blue-500/20 text-slate-200"
+                  >
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none text-white">
+                          {session.user.name || "User"}
+                        </p>
+                        <p className="text-xs leading-none text-slate-400">
+                          {session.user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-blue-500/10" />
+                    <DropdownMenuItem className="focus:bg-blue-500/10 focus:text-blue-400 cursor-pointer">
+                      <Link href="/dashboard" className="flex gap-2">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                      className="focus:bg-red-500/10 focus:text-red-400 cursor-pointer text-red-500"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Logout</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="hidden sm:block text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors"
+                  >
+                    Log in
+                  </Link>
+                  <motion.a
+                    href="/register"
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: "0 0 25px rgba(59, 130, 246, 0.4)",
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    className="hidden sm:block rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-blue-500 hover:scale-105"
+                  >
+                    Register
+                  </motion.a>
+                </>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -238,19 +305,60 @@ const Navbar = () => {
                 </motion.a>
               );
             })}
-            <div className="mt-4  flex flex-col gap-3 border-t border-violet-500/10 pt-4">
-              <Link
-                href="/login"
-                className="flex h-11 items-center justify-center rounded-lg border border-violet-500/20 text-sm font-medium text-white"
-              >
-                Log in
-              </Link>
-              <Link
-                href="/register"
-                className="flex h-11 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-sm font-bold text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]"
-              >
-                Register For Free
-              </Link>
+            
+            {/* Mobile Auth Section */}
+            <div className="mt-4 flex flex-col gap-3 border-t border-blue-500/10 pt-4">
+              {status === "loading" ? (
+                <div className="h-11 w-full animate-pulse rounded-lg bg-blue-900/20 border border-blue-500/20" />
+              ) : session?.user ? (
+                <>
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-500/10">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={session.user.image || undefined} alt={session.user.name || "User"} />
+                      <AvatarFallback className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-sm">
+                        {getInitials(session.user.name, session.user.email)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-white truncate">
+                        {session.user.name || "User"}
+                      </p>
+                      <p className="text-xs text-slate-400 truncate">
+                        {session.user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <motion.button
+                    onClick={() => {
+                      signOut({ callbackUrl: "/" });
+                      toggleMenu();
+                    }}
+                    whileHover={{ x: 5 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex h-11 items-center gap-2 px-4 rounded-lg border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="text-sm font-medium">Logout</span>
+                  </motion.button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={toggleMenu}
+                    className="flex h-11 items-center justify-center rounded-lg border border-blue-500/20 text-sm font-medium text-white hover:bg-blue-500/10 transition-colors"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={toggleMenu}
+                    className="flex h-11 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-sm font-bold text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+                  >
+                    Register For Free
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

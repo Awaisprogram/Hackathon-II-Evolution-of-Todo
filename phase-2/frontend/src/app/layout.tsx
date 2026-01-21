@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/layout/Navbar";
-import Footer from "../components/layout/Footer";
-import SmoothScroll from "../components/providers/smooth-scroll";
+import ClientLayout from "./clientLayout";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,15 +29,7 @@ export default function RootLayout({
       <body
         className={`antialiased bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 scroll-container`}
       >
-        <div className="scroll-optimized" style={{contain: 'layout style paint'}}>
-          <Navbar />
-          <SmoothScroll>
-            <main className="flex min-h-screen flex-col overflow-hidden">
-              {children}
-            </main>
-          </SmoothScroll>
-          <Footer />
-        </div>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
