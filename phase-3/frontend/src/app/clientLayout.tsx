@@ -28,8 +28,8 @@ export default function ClientLayout({
           {children}
         </main>
         
-        {!AuthRoutes.includes(pathname) && <Footer />}
           <AIAssistantWidget />
+        {!AuthRoutes.includes(pathname) && <Footer />}
         <Toaster />
       </SmoothScroll>
     </AuthProvider>
