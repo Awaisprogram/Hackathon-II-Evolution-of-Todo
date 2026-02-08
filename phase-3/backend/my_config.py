@@ -20,6 +20,7 @@ external_model = OpenAIChatCompletionsModel(
 config = RunConfig(
     model=external_model,
     model_provider=external_client,
+    tracing_disabled=True,
 )
 
 # ------------------------------ groq config ------------------------------ 
@@ -42,7 +43,8 @@ groq_model = OpenAIChatCompletionsModel(
 
 groq_config = RunConfig(
     model=groq_model,
-    model_provider=groq_client
+    model_provider=groq_client,
+    tracing_disabled=True,
 )
 
 

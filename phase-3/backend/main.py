@@ -433,126 +433,42 @@ async def chat(request: ChatRequest):
             agent = Agent(
                 name="Personal Portfolio Agent",
                 instructions="""
-                - Identity / Role
-                You are Awais’s Portfolio Assistant, a professional AI agent representing Awais Mehmood, a Full-Stack Developer, Front-End Specialist, and AI Engineer. Your purpose is to provide accurate, clear, and helpful information about Awais, his skills, projects, and contact options. You speak in a friendly, professional, and confident tone, making users feel informed and welcomed.
-
-                Background About the Owner (Awais)
-                Name: Awais Mehmood
-
-                Roles: Full-Stack Developer, Front-End Specialist, AI Engineer
-
-                Experience: Highly skilled in the modern web stack (React, Next.js, JavaScript, TypeScript) and robust backend development (Python, FastAPI). Proven ability to build modern, production-ready applications, implement interactive interfaces with tools like GSAP, and leverage AI/LLMs for intelligent features.
-
-                Strengths / Interests: Creating visually appealing, responsive, and user-centric web interfaces; delivering scalable backend architecture; solving problems with Full-Stack solutions; enthusiastic about continuous learning and technology sharing.
-
-                - Personality / Style: Detail-oriented, creative, solution-focused, and enthusiastic.
-                Tools Integration Guidelines:
-
-                Skills Tool:
-
-                Contains all technical and soft skills of Awais.
-
-                Call this tool when asked about skills, expertise, or technologies.
-
-                Projects Tool:
-
-                Contains all portfolio projects with descriptions, features, and technologies.
-
-                Call this tool when asked about any project, portfolio work, or case studies.
-
-                Contact Tool:
-
-                Contains professional contact channels like email, LinkedIn, GitHub.
-
-                Call this tool when asked how to contact or connect with Awais.
-
-                Rules for Tool Use:
-
-                Always prefer actual tool data over default persona data.
-
-                Never fabricate skills, projects, or contact information.
-
-                Politely redirect if the user asks about topics outside the portfolio scope.
-
-                - Response Guidelines:
-
-                Keep answers concise but informative.
-
-                Structure responses clearly, using bullet points when necessary.
-
-                Avoid unnecessary apologies or filler statements.
-
-                Maintain professional and friendly tone at all times.
-
-                Handling Unknown Questions:
-
-                Politely state if information is unavailable:
-                “I don’t have that detail right now, but here’s what I can share…”
-
-                Redirect questions outside of the portfolio:
-                “I can help you learn about Awais’s skills, projects, or how to contact him.”
-
-                - Example Responses:
-
-                Q: “What skills does Awais have?”
-                A: Calls Skills Tool → returns a structured list of skills.
-
-                Q: “Tell me about Awais’s projects.”
-                A: Calls Projects Tool → provides a detailed overview of portfolio projects.
-
-                Q: “How can I contact Awais?”
-                A: Calls Contact Tool → shares professional contact channels.
-
-                Q: “Who is Awais?”
-                A: Summarizes persona background with tone and professionalism.
-                """,
-                tools=[get_social_info, get_services_info, get_skills_info,get_projects_info],
+                
+                """
             )
 
             print("⚙️ Running agent...")
 
-            # 🧩 Wrapped Runner.run_streamed inside try/except for Guardrail handling
-            try:
-                result = Runner.run_streamed(
-                    agent,
-                    input="\n".join(
-                        [
-                            f"{message['role']}: {message['text']}"
-                            for message in request.messages
-                        ]
-                    ),
-                    run_config=groq_config,
-                    
-                )
+            result = Runner.run_streamed(
+                agent,
+                input="\n".join(
+                    f"{message['role']}: {message['text']}"
+                    for message in request.messages
+                ),
+                run_config=groq_config,
+            )
 
-                async for event in result.stream_events():
-                    if (
-                        event.type == "raw_response_event"
-                        and isinstance(event.data, ResponseTextDeltaEvent)
-                    ):
-                        chunk_data = {"chunk": event.data.delta}
-                        yield f"{json.dumps(chunk_data)}\n\n"
-                        print({"chunk": chunk_data})
-                    elif (
-                        event.type == "run_item_stream_event"
-                        and event.item.type == "tool_call_item"
-                    ):
-                        print(f"{event.item.raw_item.name} Tool was called")
+            async for event in result.stream_events():
+                if (
+                    event.type == "raw_response_event"
+                    and isinstance(event.data, ResponseTextDeltaEvent)
+                ):
+                    chunk_data = {"chunk": event.data.delta}
+                    yield json.dumps(chunk_data) + "\n\n"
+                    print({"chunk": chunk_data})
 
-                yield json.dumps({"done": True}) + "\n\n"
-                print("✅ Stream completed successfully")
+                elif (
+                    event.type == "run_item_stream_event"
+                    and event.item.type == "tool_call_item"
+                ):
+                    print(f"{event.item.raw_item.name} Tool was called")
 
-            except Exception as e:
-               print("Something went wrong")
-
-            except Exception as e:
-                alert_msg = "Alert: Guardrail output tripwire was triggered!"
-                print(alert_msg)
-                yield f"{json.dumps({'error': alert_msg})}\n\n"
+            yield json.dumps({"done": True}) + "\n\n"
+            print("✅ Stream completed successfully")
 
         except Exception as e:
             print("❌ Error:", str(e))
-            yield f"{json.dumps({'error': str(e)})}\n\n"
+            yield json.dumps({"error": str(e)}) + "\n\n"
 
     return StreamingResponse(
         generate_response(),
@@ -562,5 +478,3 @@ async def chat(request: ChatRequest):
             "Connection": "keep-alive",
         },
     )
-
-

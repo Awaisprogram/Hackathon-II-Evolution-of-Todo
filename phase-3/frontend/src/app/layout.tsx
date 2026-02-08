@@ -5,17 +5,6 @@ import ClientLayout from "./clientLayout";
 import AIAssistantWidget from "@/components/AIAssistant";
 
 
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
   title: "TodoApp - Your Personal Task Manager",
   description: "A modern, responsive todo application for managing your tasks",
@@ -31,7 +20,7 @@ export default function RootLayout({
       <body
         className={`antialiased bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 scroll-container`}
       >
-        <ClientLayout>{children} <AIAssistantWidget /> </ClientLayout>
+        <ClientLayout>{children}  </ClientLayout>
       </body>
     </html>
   );
