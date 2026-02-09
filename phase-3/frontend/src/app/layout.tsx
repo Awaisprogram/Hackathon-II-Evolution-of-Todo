@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "./clientLayout";
-import AIAssistantWidget from "@/components/AIAssistant";
 
 
 export const metadata: Metadata = {
@@ -16,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-optimized">
+    <html lang="en" >
       <body
         className={`antialiased bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 scroll-container`}
       >

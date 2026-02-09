@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-optimized">
+    <html lang="en">
       <body
         className={`antialiased bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 scroll-container`}
       >

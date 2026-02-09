@@ -17,15 +17,6 @@ export interface TaskCreate {
   dueDate: string;
 }
 
-export interface TaskStats {
-  total_tasks: number;
-  completed_tasks: number;
-  pending_tasks: number;
-  today_tasks: number;
-  high_priority_tasks: number;
-  completion_rate: number;
-}
-
 class TaskAPI {
   private baseUrl: string;
 
@@ -103,11 +94,6 @@ class TaskAPI {
     return this.request<{ message: string; id: string }>(`/tasks/${id}`, {
       method: 'DELETE',
     });
-  }
-
-  // Get task statistics
-  async getStats(): Promise<TaskStats> {
-    return this.request<TaskStats>('/tasks/stats');
   }
 }
 
