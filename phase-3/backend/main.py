@@ -61,13 +61,16 @@ class ChatRequest(BaseModel):
 
 class Task(SQLModel, table=True):
     __tablename__ = "task"
-    id: str = Field(primary_key=True)
+
+    id: Optional[int] = Field(default=None, primary_key=True)
     title: str = Field(index=True)
-    completed: bool = Field(default=False)
-    priority: Priority = Field(default=Priority.medium)
-    dueDate: str = Field(default="")
-    createdAt: str = Field(default="")
+    completed: bool = False
+    priority: Priority = Priority.medium
+    dueDate: str = ""
+    createdAt: str = ""
     user_id: Optional[str] = Field(default=None, index=True)
+
+
 
 class TaskCreate(SQLModel):
     title: str
@@ -183,7 +186,8 @@ def get_tasks(user_id: str = Depends(get_current_user)):
                     "user_id": task.user_id
                 }
                 task_list.append(task_dict)
-                print(f"  📝 Task: {task.id[:8]}... - {task.title}")
+                print(f"  📝 Task: {task.id} - {task.title}")
+
             
             print(f"✅ Returning {len(task_list)} tasks")
             return task_list
@@ -194,6 +198,24 @@ def get_tasks(user_id: str = Depends(get_current_user)):
 
 @app.post("/tasks")
 def create_task(task: TaskCreate, user_id: str = Depends(get_current_user)):
+    now = datetime.utcnow().isoformat()
+
+    db_task = Task(
+        title=task.title,
+        priority=task.priority,
+        dueDate=task.dueDate or now,
+        createdAt=now,
+        completed=False,
+        user_id=user_id,
+    )
+
+    with Session(engine) as session:
+        session.add(db_task)
+        session.commit()
+        session.refresh(db_task)
+
+        return db_task
+
     """Create a new task for the authenticated user"""
     try:
         print(f"➕ POST /tasks - Creating task for user: {user_id}")
@@ -218,7 +240,7 @@ def create_task(task: TaskCreate, user_id: str = Depends(get_current_user)):
             session.commit()
             session.refresh(db_task)
             
-            print(f"✅ Created task: {db_task.id[:8]}...")
+            print(f"✅ Created task: {db_task.id}...")
             
             # Return as dict
             return {
@@ -238,8 +260,9 @@ def create_task(task: TaskCreate, user_id: str = Depends(get_current_user)):
 @app.put("/tasks/{id}")
 def update_task(id: str, update_data: TaskUpdate, user_id: str = Depends(get_current_user)):
     """Update a task - only if it belongs to the authenticated user"""
+    id = int(id)
     try:
-        print(f"✏️ PUT /tasks/{id[:8]}... - Updating task for user: {user_id}")
+        print(f"✏️ PUT /tasks/{id} - Updating task for user: {user_id}")
         
         with Session(engine) as session:
             db_task = session.exec(
@@ -250,7 +273,7 @@ def update_task(id: str, update_data: TaskUpdate, user_id: str = Depends(get_cur
             ).first()
             
             if not db_task:
-                print(f"❌ Task {id[:8]}... not found or user {user_id} not authorized")
+                print(f"❌ Task {id}... not found or user {user_id} not authorized")
                 raise HTTPException(status_code=404, detail="Task not found or unauthorized")
             
             # Update only provided fields
@@ -266,7 +289,7 @@ def update_task(id: str, update_data: TaskUpdate, user_id: str = Depends(get_cur
             session.commit()
             session.refresh(db_task)
             
-            print(f"✅ Updated task: {db_task.id[:8]}...")
+            print(f"✅ Updated task: {db_task.id}...")
             
             return {
                 "id": db_task.id,
@@ -287,8 +310,9 @@ def update_task(id: str, update_data: TaskUpdate, user_id: str = Depends(get_cur
 @app.patch("/tasks/{id}/toggle")
 def toggle_task_completion(id: str, user_id: str = Depends(get_current_user)):
     """Toggle task completion status"""
+    id = int(id)
     try:
-        print(f"🔄 PATCH /tasks/{id[:8]}.../toggle - Toggling for user: {user_id}")
+        print(f"🔄 PATCH /tasks/{id}/toggle - Toggling for user: {user_id}")
         
         with Session(engine) as session:
             db_task = session.exec(
@@ -299,14 +323,14 @@ def toggle_task_completion(id: str, user_id: str = Depends(get_current_user)):
             ).first()
             
             if not db_task:
-                print(f"❌ Task {id[:8]}... not found or user {user_id} not authorized")
+                print(f"❌ Task {id}... not found or user {user_id} not authorized")
                 raise HTTPException(status_code=404, detail="Task not found or unauthorized")
             
             db_task.completed = not db_task.completed
             session.commit()
             session.refresh(db_task)
             
-            print(f"✅ Toggled task {db_task.id[:8]}... to completed={db_task.completed}")
+            print(f"✅ Toggled task {db_task.id}... to completed={db_task.completed}")
             
             return {
                 "id": db_task.id,
@@ -327,8 +351,9 @@ def toggle_task_completion(id: str, user_id: str = Depends(get_current_user)):
 @app.delete("/tasks/{id}")
 def delete_task(id: str, user_id: str = Depends(get_current_user)):
     """Delete a task - only if it belongs to the authenticated user"""
+    id = int(id)
     try:
-        print(f"🗑️ DELETE /tasks/{id[:8]}... - Deleting for user: {user_id}")
+        print(f"🗑️ DELETE /tasks/{id} - Deleting for user: {user_id}")
         
         with Session(engine) as session:
             db_task = session.exec(
@@ -339,13 +364,13 @@ def delete_task(id: str, user_id: str = Depends(get_current_user)):
             ).first()
             
             if not db_task:
-                print(f"❌ Task {id[:8]}... not found or user {user_id} not authorized")
+                print(f"❌ Task {id}... not found or user {user_id} not authorized")
                 raise HTTPException(status_code=404, detail="Task not found or unauthorized")
             
             session.delete(db_task)
             session.commit()
             
-            print(f"✅ Deleted task: {id[:8]}...")
+            print(f"✅ Deleted task: {id}...")
             return {"message": "Task deleted", "id": id}
     except HTTPException:
         raise
@@ -441,7 +466,7 @@ async def chat(request: ChatRequest, user_id: str = Depends(get_current_user)):
             ):
                 return await _update_task(
                     user_id=user_id,
-                    id=id,
+                    id=int(id),
                     title=title,
                     priority=priority,
                     dueDate=dueDate,
@@ -450,19 +475,19 @@ async def chat(request: ChatRequest, user_id: str = Depends(get_current_user)):
             async def delete_task_tool(id: str):
                 return await _delete_task(
                     user_id=user_id,
-                    id=id,
+                    id=int(id),
                 )
             
             async def complete_task_tool(id: str):
                 return await _complete_task(
                     user_id=user_id,
-                    id=id,
+                    id=int(id),
                 )
             
             async def incomplete_task_tool(id: str):
                 return await _incomplete_task(
                     user_id=user_id,
-                    id=id,
+                    id=int(id),
                 )
             
             # -------------------------

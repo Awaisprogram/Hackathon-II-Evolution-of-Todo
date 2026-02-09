@@ -3,7 +3,7 @@ MCP Tool: add_task
 Purpose: Create new task for the user via chatbot
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from enum import Enum
 
 
@@ -22,43 +22,35 @@ async def add_task(
     """
     Create a new task for the user.
     
-    Example usage:
-    - "Create a task: Buy groceries with high priority"
-    - "Add todo: Finish project report with medium priority"
-    
     Args:
         user_id: User's ID from JWT authentication context
-        title: Task title (required, max 200 chars)
-        priority: Task priority: low, medium, or high (default: medium)
-        dueDate: Due date in ISO format or empty string (default: empty)
+        title: Task title (required)
+        priority: Task priority: low, medium, or high
+        dueDate: Due date in ISO format or empty string
     
     Returns:
         dict: {id, title, priority, dueDate, completed, status, message}
     """
     try:
-        # Validate inputs for empty title
+        # Validate inputs
         if not title or len(title.strip()) == 0:
             return {"error": "Title cannot be empty", "status": "error"}
-        
-        # Import from main.py to use existing Task model and Session
+
+        # Import models and DB session
         import sys
         import os
         sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         from main import Task, Session, engine
         from datetime import datetime
-        import uuid
-        
-        # Use the existing database engine from main.py
+
         print(f"[MCP add_task] Creating task for user_id: {user_id}")
         print(f"[MCP add_task] Task details: title='{title}', priority={priority}")
-        
+
         with Session(engine) as db:
-            # Create new task
-            task_id = str(uuid.uuid4())
             now = datetime.utcnow().isoformat()
-            
+
+            # Let DB assign the integer ID automatically
             db_task = Task(
-                id=task_id,
                 title=title.strip(),
                 priority=priority,
                 dueDate=dueDate or now,
@@ -66,13 +58,13 @@ async def add_task(
                 completed=False,
                 user_id=user_id,
             )
-            
+
             db.add(db_task)
             db.commit()
-            db.refresh(db_task)
-            
+            db.refresh(db_task)  # get the auto-generated integer ID
+
             return {
-                "id": db_task.id,
+                "id": db_task.id,  # this is now an int
                 "title": db_task.title,
                 "priority": db_task.priority.value if hasattr(db_task.priority, 'value') else db_task.priority,
                 "dueDate": db_task.dueDate,
@@ -81,9 +73,8 @@ async def add_task(
                 "status": "created",
                 "message": f"Task '{db_task.title}' created successfully"
             }
-    
+
     except Exception as e:
         import traceback
         traceback.print_exc()
         return {"error": f"Failed to create task: {str(e)}", "status": "error"}
-

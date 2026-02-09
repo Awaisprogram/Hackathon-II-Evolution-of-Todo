@@ -46,9 +46,11 @@ async def update_task(
         
         # Use the existing database engine from main.py
         with Session(engine) as db:
+            # Convert ID to integer for DB query
+            task_id = int(id)
             # Find the task belonging to the user
             db_task = db.exec(
-                select(Task).where(Task.id == id, Task.user_id == user_id)
+                select(Task).where(Task.id == task_id, Task.user_id == user_id)
             ).first()
             
             if not db_task:
